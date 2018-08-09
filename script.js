@@ -11,13 +11,11 @@ for (inputField of inputFields) {
 
 function submitClicked(event) {
     event.preventDefault()
-
     for (inputField of inputFields) {
         flagBlank(inputField)
     }
-
     for (inputDiv of inputDivs) {
-        console.log(inputDiv.id + " alerts: " + gatherAlerts(inputDiv))
+        updateAlerts(inputDiv)
     }
 }
 
@@ -40,7 +38,15 @@ function gatherAlerts(inputElement) {
     return elementAlerts
 }
 
-
-
+function updateAlerts(inputDiv) {
+    var elementAlerts = gatherAlerts(inputDiv)
+    var alertsDivExists = 1
+    if (elementAlerts.length > 0) {
+        var alertsDiv = document.createElement("div")
+        alertsDiv.classList.add("alerts")
+        alertsDiv.innerText = elementAlerts
+        inputDiv.appendChild(alertsDiv)
+    }
+}
 
 formElement.addEventListener("submit", submitClicked)
