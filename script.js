@@ -1,35 +1,30 @@
 var formElement = document.getElementById("parking-form")
 var inputFields = document.getElementsByTagName("input")
 var groupedIDs = ["car-year", "car-make", "car-model"]
+var alerts = {}
+
+// set up alerts object
+for (inputField of inputFields) {
+    alerts[inputField.id]=[]
+}
 
 function submitClicked(event) {
     event.preventDefault()
-    flagBlanks()
+
+    for (inputField of inputFields) {
+        flagBlank(inputField)
+    }
+
+
 }
 
-function flagBlanks() {
-    for (inputField of inputFields) {
-        if (inputField.value.trim() === '') {
-            if (groupedIDs.includes(inputField.id)) {
-                if (!inputField.parentElement.parentElement.classList.contains("input-invalid")) {
-                    var alertDiv = document.createElement("div")
-                    alertDiv.classList.add("alert")
-                    alertDiv.innerText = "car year, make, and model are required"
-                    inputField.parentElement.parentElement.classList.add("input-invalid")
-                    inputField.parentElement.parentElement.append(alertDiv)
-                }
-            }
-            else {
-                if (!inputField.parentElement.classList.contains("input-invalid")) {
-                    var alertDiv = document.createElement("div")
-                    alertDiv.classList.add("alert")
-                    alertDiv.innerText = inputField.id + " is required"
-                    inputField.parentElement.classList.add("input-invalid")
-                    inputField.parentElement.append(alertDiv)
-                }
-            }
-        }
+function flagBlank() {
+    if (inputField.value.trim() === '') {
+        alerts[inputField.id].push(inputField.id + " cannot be blank")
     }
 }
+
+
+
 
 formElement.addEventListener("submit", submitClicked)
