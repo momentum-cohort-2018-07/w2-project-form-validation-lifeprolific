@@ -1,6 +1,6 @@
 var formElement = document.getElementById("parking-form")
 var inputFields = document.getElementsByTagName("input")
-var specialIDs = ["car-year", "car-make", "car-model"]
+var groupedIDs = ["car-year", "car-make", "car-model"]
 
 function submitClicked(event) {
     event.preventDefault()
@@ -10,11 +10,23 @@ function submitClicked(event) {
 function flagBlanks() {
     for (inputField of inputFields) {
         if (inputField.value.trim() === '') {
-            if (specialIDs.includes(inputField.id)) {
-                inputField.parentElement.parentElement.classList.add("input-invalid")
+            if (groupedIDs.includes(inputField.id)) {
+                if (!inputField.parentElement.parentElement.classList.contains("input-invalid")) {
+                    var alertDiv = document.createElement("div")
+                    alertDiv.classList.add("alert")
+                    alertDiv.innerText = inputField.id + " is EXTREMELY required"
+                    inputField.parentElement.parentElement.classList.add("input-invalid")
+                    inputField.parentElement.parentElement.append(alertDiv)
+                }
             }
             else {
-                inputField.parentElement.classList.add("input-invalid")
+                if (!inputField.parentElement.classList.contains("input-invalid")) {
+                    var alertDiv = document.createElement("div")
+                    alertDiv.classList.add("alert")
+                    alertDiv.innerText = inputField.id + " is EXTREMELY required"
+                    inputField.parentElement.classList.add("input-invalid")
+                    inputField.parentElement.append(alertDiv)
+                }
             }
         }
     }
