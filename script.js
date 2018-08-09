@@ -14,7 +14,7 @@ function flagBlanks() {
                 if (!inputField.parentElement.parentElement.classList.contains("input-invalid")) {
                     var alertDiv = document.createElement("div")
                     alertDiv.classList.add("alert")
-                    alertDiv.innerText = inputField.id + " is EXTREMELY required"
+                    alertDiv.innerText = "car year, make, and model are required"
                     inputField.parentElement.parentElement.classList.add("input-invalid")
                     inputField.parentElement.parentElement.append(alertDiv)
                 }
@@ -23,7 +23,7 @@ function flagBlanks() {
                 if (!inputField.parentElement.classList.contains("input-invalid")) {
                     var alertDiv = document.createElement("div")
                     alertDiv.classList.add("alert")
-                    alertDiv.innerText = inputField.id + " is EXTREMELY required"
+                    alertDiv.innerText = inputField.id + " is required"
                     inputField.parentElement.classList.add("input-invalid")
                     inputField.parentElement.append(alertDiv)
                 }
