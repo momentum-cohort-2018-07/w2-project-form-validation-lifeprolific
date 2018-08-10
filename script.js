@@ -3,7 +3,7 @@ var inputFields = document.getElementsByTagName("input")
 var inputDivs = document.getElementsByClassName("input-field")
 var fieldValidations = {
     "name": [checkNotBlank],
-    "car-year": [checkNotBlank],
+    "car-year": [checkNotBlank, checkIsNumber],
     "car-make": [checkNotBlank],
     "car-model": [checkNotBlank],
     "start-date": [checkNotBlank],
@@ -71,7 +71,20 @@ function checkNotBlank(inputElement) {
     }
     if (inputElement.value.trim() === "") {
         response.errorFound = true
-        response.errorMessage = inputElement.id + " cannot be blank"
+        response.errorMessage = inputElement.id + " is required"
+    }
+    return response
+}
+
+function checkIsNumber(inputElement) {
+    var response = {
+        errorFound: false,
+        errorType: "notNumber",
+        errorMessage: ""
+    }
+    if (isNaN(parseInt(inputElement.value))) {
+        response.errorFound = true
+        response.errorMessage = inputElement.id + " must be a number"
     }
     return response
 }
