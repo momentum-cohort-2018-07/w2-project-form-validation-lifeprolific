@@ -24,25 +24,34 @@ function findParentInputDiv(htmlElement) {
     }
 }
 
-function findError(htmlElement, errorClass) {
-    for (var childElement of htmlElement.children) {
-        if (childElement.classList.contains(errorClass)) {
-            return childElement
-        }
-        else {
-            findError(childElement)
+function findErrors(htmlElement, errorClass) {
+    var errorArray = []
+    function recursiveLoop (htmlInput, classInput) {
+        for (var childElement of htmlInput.children) {
+            if (childElement.classList.contains(classInput)) {
+                errorArray.push(childElement)
+            }
+            else {
+                recursiveLoop(childElement, classInput)
+            }
         }
     }
-    return false
+    recursiveLoop(htmlElement, errorClass)
+    if (errorArray.length === 0) {
+        return false
+    }
+    else {
+        return errorArray
+    }
 }
 
 function validate(inputElement) {
     for (var validationMethod of fieldValidations[inputElement.id]) {
         var response = validationMethod(inputElement)
         var errorClass = inputElement.id + "-" + response.errorType
-        var errorMessageDiv = findError(findParentInputDiv(inputElement), errorClass)
+        var errorMessageDivs = findErrors(findParentInputDiv(inputElement), errorClass)
         if (response.errorFound) {
-            if (!errorMessageDiv) {
+            if (!errorMessageDivs) {
                 var newErrorDiv = document.createElement("div")
                 newErrorDiv.classList.add(errorClass)
                 newErrorDiv.classList.add("error_message")
@@ -50,12 +59,14 @@ function validate(inputElement) {
                 findParentInputDiv(inputElement).appendChild(newErrorDiv)
             }
         }
-        else if (errorMessageDiv) {
-            errorMessageDiv.remove()
+        else if (errorMessageDivs) {
+            for (var errorMessageDiv of errorMessageDivs) {
+                errorMessageDiv.remove()
+            }
         }
     }
     var parentInputDiv = findParentInputDiv(inputElement)
-    if(findError(parentInputDiv, "error_message")) {
+    if (findErrors(parentInputDiv, "error_message")) {
         parentInputDiv.classList.add("input-invalid")
         parentInputDiv.classList.remove("input-valid")
     }
@@ -124,7 +135,7 @@ function checkDateInFuture(inputElement) {
         errorMessage: ""
     }
     var dateNow = new Date()
-    if (inputElement.valueAsDate < dateNow.setHours(0,0,0,0)) {
+    if (inputElement.valueAsDate < dateNow.setHours(0, 0, 0, 0)) {
         response.errorFound = true
         response.errorMessage = inputElement.id + " must be in the future"
     }
@@ -163,19 +174,25 @@ function submitClicked(event) {
     event.preventDefault()
     for (var inputField of inputFields) {
         validate(inputField)
-        updateTotal()
+    }
+    updateTotal()
+}
+
+function updateTotal() {
+    if (findErrors(formElement, "error_message")) {
+        document.getElementById("total").innerText = ""
+    }
+    else {
+        var total = calculateTotal(document.getElementById("start-date").valueAsDate, document.getElementById("days").value)
+        document.getElementById("total").innerText = "$" + total + ".00"
     }
 }
 
-function updateTotal () {
-
-}
-
-function calculateTotal (startDate, days) {
+function calculateTotal(startDate, days) {
     var thisDay = startDate
-    var prices = [7,5,5,5,5,5,7]
+    var prices = [7, 5, 5, 5, 5, 5, 7]
     var total = 0
-    for (var index = 0; index < days; index ++, thisDay.setDate(thisDay.getDate() + 1)) {
+    for (var index = 0; index < days; index++ , thisDay.setDate(thisDay.getDate() + 1)) {
         total += prices[thisDay.getDay()]
     }
     return total
