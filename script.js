@@ -163,7 +163,22 @@ function submitClicked(event) {
     event.preventDefault()
     for (var inputField of inputFields) {
         validate(inputField)
+        updateTotal()
     }
+}
+
+function updateTotal () {
+
+}
+
+function calculateTotal (startDate, days) {
+    var thisDay = startDate
+    var prices = [7,5,5,5,5,5,7]
+    var total = 0
+    for (var index = 0; index < days; index ++, thisDay.setDate(thisDay.getDate() + 1)) {
+        total += prices[thisDay.getDay()]
+    }
+    return total
 }
 
 formElement.addEventListener("submit", submitClicked)
