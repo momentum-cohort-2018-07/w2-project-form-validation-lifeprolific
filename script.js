@@ -12,7 +12,7 @@ var fieldValidations = {
     "days": [checkNotBlank, checkIsNumber, checkDaysBetween1And30],
     "credit-card": [checkNotBlank, checkValidCCNumber],
     "cvv": [checkNotBlank, check3DigitNumber],
-    "expiration": [checkNotBlank, checkMMYYDateFuture]
+    "expiration": [checkNotBlank, checkMMYYDateFuture, checkMMYYValid]
 }
 
 function findParentInputDiv(htmlElement) {
@@ -227,6 +227,29 @@ function checkMMYYDateFuture (inputElement) {
     if (!dateFuture) {
         response.errorFound = true
         response.errorMessage = inputElement.id + " must be in future"
+    }
+    return response
+}
+
+function checkMMYYValid (inputElement) {
+    var response = {
+        errorFound: false,
+        errorType: "MMYYInvalid",
+        errorMessage: ""
+    }
+    var input = inputElement.value.trim()
+    var inputYY = input.slice(3,5)
+    var inputMM = input.slice(0,2)
+    var inputDelimiter = input.slice(2,3)
+    var inputLen5 = input.length === 5
+    var inputMMNumber = !isNaN(parseInt(inputMM))
+    var inputYYNumber = !isNaN(parseInt(inputYY))
+    var inputDelimiterValid = inputDelimiter === "/"
+    var inputMMValid = (parseInt(inputMM) > 0) && (parseInt(inputMM) < 13)
+
+    if (!(inputLen5 && inputMMNumber && inputYYNumber && inputDelimiterValid && inputMMValid)) {
+        response.errorFound = true
+        response.errorMessage = inputElement.id + " must be in valid MM/YY format"
     }
     return response
 }
