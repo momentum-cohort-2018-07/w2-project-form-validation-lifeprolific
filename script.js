@@ -8,7 +8,7 @@ var fieldValidations = {
     "car-year": [checkNotBlank, checkIsNumber, checkYearAfter1900, checkYearNotFuture],
     "car-make": [checkNotBlank],
     "car-model": [checkNotBlank],
-    "start-date": [checkNotBlank],
+    "start-date": [checkNotBlank, checkDateInFuture],
     "days": [checkNotBlank],
     "credit-card": [checkNotBlank],
     "cvv": [checkNotBlank],
@@ -113,6 +113,20 @@ function checkYearNotFuture(inputElement) {
     if (parseInt(inputElement.value) > new Date().getFullYear()) {
         response.errorFound = true
         response.errorMessage = inputElement.id + " may not be in future"
+    }
+    return response
+}
+
+function checkDateInFuture(inputElement) {
+    var response = {
+        errorFound: false,
+        errorType: "pastDate",
+        errorMessage: ""
+    }
+    var dateNow = new Date()
+    if (inputElement.valueAsNumber < dateNow.setHours(0,0,0,0)) {
+        response.errorFound = true
+        response.errorMessage = inputElement.id + " must be in the future"
     }
     return response
 }
