@@ -11,7 +11,7 @@ var fieldValidations = {
     "start-date": [checkNotBlank, checkDateInFuture],
     "days": [checkNotBlank, checkIsNumber, checkDaysBetween1And30],
     "credit-card": [checkNotBlank],
-    "cvv": [checkNotBlank],
+    "cvv": [checkNotBlank, check3DigitNumber],
     "expiration": [checkNotBlank]
 }
 
@@ -84,7 +84,7 @@ function checkIsNumber(inputElement) {
         errorType: "notNumber",
         errorMessage: ""
     }
-    if (isNaN(parseInt(inputElement.value))) {
+    if (isNaN(parseInt(inputElement.value.trim()))) {
         response.errorFound = true
         response.errorMessage = inputElement.id + " must be a number"
     }
@@ -97,7 +97,7 @@ function checkYearAfter1900(inputElement) {
         errorType: "notAfter1900",
         errorMessage: ""
     }
-    if (!(parseInt(inputElement.value) > 1900)) {
+    if (!(parseInt(inputElement.value.trim()) > 1900)) {
         response.errorFound = true
         response.errorMessage = inputElement.id + " must be after 1900"
     }
@@ -110,7 +110,7 @@ function checkYearNotFuture(inputElement) {
         errorType: "futureYear",
         errorMessage: ""
     }
-    if (parseInt(inputElement.value) > new Date().getFullYear()) {
+    if (parseInt(inputElement.value.trim()) > new Date().getFullYear()) {
         response.errorFound = true
         response.errorMessage = inputElement.id + " may not be in future"
     }
@@ -124,7 +124,7 @@ function checkDateInFuture(inputElement) {
         errorMessage: ""
     }
     var dateNow = new Date()
-    if (inputElement.valueAsNumber < dateNow.setHours(0,0,0,0)) {
+    if (inputElement.valueAsDate < dateNow.setHours(0,0,0,0)) {
         response.errorFound = true
         response.errorMessage = inputElement.id + " must be in the future"
     }
@@ -137,10 +137,24 @@ function checkDaysBetween1And30(inputElement) {
         errorType: "notBetween1And30",
         errorMessage: ""
     }
-    var value = parseInt(inputElement.value)
-    if (!(value < 31 && value > 0)) {
+    var value = parseInt(inputElement.value.trim())
+    if (value > 30 || value < 1) {
         response.errorFound = true
         response.errorMessage = inputElement.id + " must be between 1 and 30"
+    }
+    return response
+}
+
+function check3DigitNumber(inputElement) {
+    var response = {
+        errorFound: false,
+        errorType: "not3DigitNumber",
+        errorMessage: ""
+    }
+    var value = parseInt(inputElement.value.trim())
+    if (isNaN(value) || inputElement.value.trim().length != 3) {
+        response.errorFound = true
+        response.errorMessage = inputElement.id + " must be a three digit number"
     }
     return response
 }
