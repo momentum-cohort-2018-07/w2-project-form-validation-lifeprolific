@@ -11,10 +11,24 @@ function findParentInputDiv (htmlElement) {
     }
 }
 
+function checkNotBlank(inputElement) {
+    var response = {
+        errorFound: false,
+        errorMessage: ""
+    }
+    if (inputElement.value.trim() === "") {
+        response.errorFound = true
+        response.errorMessage = inputElement.id + " cannot be blank"
+    }
+    return response
+}
+
 function submitClicked(event) {
     event.preventDefault()
     for (inputField of inputFields) {
-        // validate field
+        if (checkNotBlank(inputField).errorFound) {
+            console.log(checkNotBlank(inputField).errorMessage)
+        }
     }
 }
 
