@@ -9,7 +9,7 @@ var fieldValidations = {
     "car-make": [checkNotBlank],
     "car-model": [checkNotBlank],
     "start-date": [checkNotBlank, checkDateInFuture],
-    "days": [checkNotBlank],
+    "days": [checkNotBlank, checkIsNumber, checkDaysBetween1And30],
     "credit-card": [checkNotBlank],
     "cvv": [checkNotBlank],
     "expiration": [checkNotBlank]
@@ -127,6 +127,20 @@ function checkDateInFuture(inputElement) {
     if (inputElement.valueAsNumber < dateNow.setHours(0,0,0,0)) {
         response.errorFound = true
         response.errorMessage = inputElement.id + " must be in the future"
+    }
+    return response
+}
+
+function checkDaysBetween1And30(inputElement) {
+    var response = {
+        errorFound: false,
+        errorType: "notBetween1And30",
+        errorMessage: ""
+    }
+    var value = parseInt(inputElement.value)
+    if (!(value < 31 && value > 0)) {
+        response.errorFound = true
+        response.errorMessage = inputElement.id + " must be between 1 and 30"
     }
     return response
 }
