@@ -10,7 +10,7 @@ var fieldValidations = {
     "car-model": [checkNotBlank],
     "start-date": [checkNotBlank, checkDateInFuture],
     "days": [checkNotBlank, checkIsNumber, checkDaysBetween1And30],
-    "credit-card": [checkNotBlank],
+    "credit-card": [checkNotBlank, checkValidCCNumber],
     "cvv": [checkNotBlank, check3DigitNumber],
     "expiration": [checkNotBlank]
 }
@@ -166,6 +166,42 @@ function check3DigitNumber(inputElement) {
     if (isNaN(value) || inputElement.value.trim().length != 3) {
         response.errorFound = true
         response.errorMessage = inputElement.id + " must be a three digit number"
+    }
+    return response
+}
+
+function checkValidCCNumber(inputElement) {
+    function validateCardNumber(number) {
+        var regex = new RegExp("^[0-9]{16}$");
+        if (!regex.test(number))
+            return false;
+    
+        return luhnCheck(number);
+    }
+    
+    function luhnCheck(val) {
+        var sum = 0;
+        for (var i = 0; i < val.length; i++) {
+            var intVal = parseInt(val.substr(i, 1));
+            if (i % 2 == 0) {
+                intVal *= 2;
+                if (intVal > 9) {
+                    intVal = 1 + (intVal % 10);
+                }
+            }
+            sum += intVal;
+        }
+        return (sum % 10) == 0;
+    }
+
+    var response = {
+        errorFound: false,
+        errorType: "invalidCCNumber",
+        errorMessage: ""
+    }
+    if (!validateCardNumber(inputElement.value.trim())) {
+        response.errorFound = true
+        response.errorMessage = inputElement.id + " must be a valid credit card number"
     }
     return response
 }
