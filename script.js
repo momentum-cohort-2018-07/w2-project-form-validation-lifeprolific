@@ -1,9 +1,11 @@
+"use strict"
+
 var formElement = document.getElementById("parking-form")
 var inputFields = document.getElementsByTagName("input")
 var inputDivs = document.getElementsByClassName("input-field")
 var fieldValidations = {
     "name": [checkNotBlank],
-    "car-year": [checkNotBlank, checkIsNumber],
+    "car-year": [checkNotBlank, checkIsNumber, checkYearAfter1900, checkYearNotFuture],
     "car-make": [checkNotBlank],
     "car-model": [checkNotBlank],
     "start-date": [checkNotBlank],
@@ -23,7 +25,7 @@ function findParentInputDiv(htmlElement) {
 }
 
 function findError(htmlElement, errorClass) {
-    for (childElement of htmlElement.children) {
+    for (var childElement of htmlElement.children) {
         if (childElement.classList.contains(errorClass)) {
             return childElement
         }
@@ -35,7 +37,7 @@ function findError(htmlElement, errorClass) {
 }
 
 function validate(inputElement) {
-    for (validationMethod of fieldValidations[inputElement.id]) {
+    for (var validationMethod of fieldValidations[inputElement.id]) {
         var response = validationMethod(inputElement)
         var errorClass = inputElement.id + "-" + response.errorType
         var errorMessageDiv = findError(findParentInputDiv(inputElement), errorClass)
@@ -45,7 +47,7 @@ function validate(inputElement) {
                 newErrorDiv.classList.add(errorClass)
                 newErrorDiv.classList.add("error_message")
                 newErrorDiv.innerText = response.errorMessage
-                findParentInputDiv(inputField).appendChild(newErrorDiv)
+                findParentInputDiv(inputElement).appendChild(newErrorDiv)
             }
         }
         else if (errorMessageDiv) {
@@ -89,9 +91,35 @@ function checkIsNumber(inputElement) {
     return response
 }
 
+function checkYearAfter1900(inputElement) {
+    var response = {
+        errorFound: false,
+        errorType: "notAfter1900",
+        errorMessage: ""
+    }
+    if (!(parseInt(inputElement.value) > 1900)) {
+        response.errorFound = true
+        response.errorMessage = inputElement.id + " must be after 1900"
+    }
+    return response
+}
+
+function checkYearNotFuture(inputElement) {
+    var response = {
+        errorFound: false,
+        errorType: "futureYear",
+        errorMessage: ""
+    }
+    if (parseInt(inputElement.value) > new Date().getFullYear()) {
+        response.errorFound = true
+        response.errorMessage = inputElement.id + " may not be in future"
+    }
+    return response
+}
+
 function submitClicked(event) {
     event.preventDefault()
-    for (inputField of inputFields) {
+    for (var inputField of inputFields) {
         validate(inputField)
     }
 }
