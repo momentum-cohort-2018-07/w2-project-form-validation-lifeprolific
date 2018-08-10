@@ -12,7 +12,7 @@ var fieldValidations = {
     "days": [checkNotBlank, checkIsNumber, checkDaysBetween1And30],
     "credit-card": [checkNotBlank, checkValidCCNumber],
     "cvv": [checkNotBlank, check3DigitNumber],
-    "expiration": [checkNotBlank]
+    "expiration": [checkNotBlank, checkMMYYDateFuture]
 }
 
 function findParentInputDiv(htmlElement) {
@@ -206,12 +206,39 @@ function checkValidCCNumber(inputElement) {
     return response
 }
 
-function submitClicked(event) {
-    event.preventDefault()
-    for (var inputField of inputFields) {
-        validate(inputField)
+function checkMMYYDateFuture (inputElement) {
+    var response = {
+        errorFound: false,
+        errorType: "MMYYNotFuture",
+        errorMessage: ""
     }
-    updateTotal()
+    var dateNow = new Date()
+    var dateFuture = false
+    var inputYY = inputElement.value.trim().slice(3,5)
+    var inputMM = inputElement.value.trim().slice(0,2)
+    var currentYY = dateNow.getFullYear() - 2000
+    var currentMM = dateNow.getMonth() + 1
+    if (inputYY > currentYY) {
+        dateFuture = true
+    }
+    else if (inputYY == currentYY && inputMM > currentMM) {
+        dateFuture = true
+    }
+    if (!dateFuture) {
+        response.errorFound = true
+        response.errorMessage = inputElement.id + " must be in future"
+    }
+    return response
+}
+
+function calculateTotal(startDate, days) {
+    var thisDay = startDate
+    var prices = [7, 5, 5, 5, 5, 5, 7]
+    var total = 0
+    for (var index = 0; index < days; index++ , thisDay.setDate(thisDay.getDate() + 1)) {
+        total += prices[thisDay.getDay()]
+    }
+    return total
 }
 
 function updateTotal() {
@@ -224,14 +251,12 @@ function updateTotal() {
     }
 }
 
-function calculateTotal(startDate, days) {
-    var thisDay = startDate
-    var prices = [7, 5, 5, 5, 5, 5, 7]
-    var total = 0
-    for (var index = 0; index < days; index++ , thisDay.setDate(thisDay.getDate() + 1)) {
-        total += prices[thisDay.getDay()]
+function submitClicked(event) {
+    event.preventDefault()
+    for (var inputField of inputFields) {
+        validate(inputField)
     }
-    return total
+    updateTotal()
 }
 
 formElement.addEventListener("submit", submitClicked)
